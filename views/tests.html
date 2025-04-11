@@ -1,0 +1,35 @@
+<!-- views/tests.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Your IELTS Mock Tests</title>
+  <link rel="stylesheet" href="/tests.css">
+</head>
+<body>
+  <header>
+    <h1 id="greeting">Welcome!</h1>
+    <p>Choose a test below to begin:</p>
+  </header>
+
+  <main>
+    <ul class="test-list" id="testList"></ul>
+  </main>
+
+  <script>
+    // Fetch user info and populate test list
+    fetch('/user-info')
+      .then(res => res.json())
+      .then(data => {
+        document.getElementById('greeting').innerText = `Welcome, ${data.name}!`;
+
+        const testList = document.getElementById('testList');
+        for (let i = 1; i <= 19; i++) {
+          const li = document.createElement('li');
+          li.innerHTML = `<a href="/test/${i}">IELTS Reading Mock Test ${i}</a>`;
+          testList.appendChild(li);
+        }
+      });
+  </script>
+</body>
+</html>

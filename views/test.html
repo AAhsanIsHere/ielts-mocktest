@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>IELTS Mock Test</title>
+  <link rel="stylesheet" href="/public/teststyles.css">
+</head>
+<body>
+  <header>
+    <h1>IELTS Reading Mock Test</h1>
+    <div id="timer">Time left: 60:00</div>
+  </header>
+
+  <div class="main-container">
+    <div class="left-pane" id="passage-pane"></div>
+
+    <div class="right-pane">
+      <h2>Questions</h2>
+      <ol id="question-list"></ol>
+
+      <div class="navigation-controls">
+        <button id="prevBtn" onclick="changePassage(-1)">Previous</button>
+        <button id="nextBtn" onclick="changePassage(1)">Next</button>
+        <button id="submitBtn" onclick="submitAnswers()" style="display: none;">Submit</button>
+      </div>
+
+      <div id="results"></div>
+    </div>
+  </div>
+
+  <script src="/testscript.js"></script>
+</body>
+</html>

@@ -1,0 +1,39 @@
+/* public/landing.css */
+
+body {
+    background: linear-gradient(to right, #c9d6ff, #e2e2e2);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    text-align: center;
+    font-family: 'Arial', sans-serif;
+  }
+  
+  h1 {
+    font-size: 3em;
+    color: #003366;
+  }
+  
+  p {
+    font-size: 1.2em;
+    max-width: 600px;
+    margin: 20px 0;
+  }
+  
+  .btn {
+    padding: 15px 30px;
+    font-size: 16px;
+    background-color: #003366;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    margin-top: 20px;
+  }
+  
+  .btn:hover {
+    background-color: #0055aa;
+  }  
