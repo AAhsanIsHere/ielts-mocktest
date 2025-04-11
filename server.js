@@ -6,7 +6,6 @@ const Test = require('./models/Test');
 const bodyParser = require('body-parser');
 const session = require('express-session');
 const MongoStore = require('connect-mongo');
-require('dotenv').config(); // Optional: For local development
 
 const app = express();
 
@@ -19,9 +18,9 @@ mongoose.connect(process.env.MONGO_URI)
 app.use(express.static('public'));
 app.use(bodyParser.urlencoded({ extended: true }));
 
-// ✅ Session using connect-mongo
+// Sessions
 app.use(session({
-  secret: 'ieltsSecret', // Replace with strong secret in production
+  secret: 'ieltsSecret', // Replace with a strong secret
   resave: false,
   saveUninitialized: false,
   store: MongoStore.create({
