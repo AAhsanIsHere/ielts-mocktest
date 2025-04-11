@@ -9,10 +9,7 @@ const session = require('express-session');
 const app = express();
 
 // MongoDB Connection
-mongoose.connect('mongodb://localhost:27017/ielts', {
-    useNewUrlParser: true,
-    useUnifiedTopology: true
-}).then(() => console.log("MongoDB connected"))
+mongoose.connect(process.env.MONGO_URI).then(() => console.log("MongoDB connected"))
   .catch(err => console.error(err));
 
 // Middleware
