@@ -1,9 +1,8 @@
-// server.js
 const express = require('express');
 const mongoose = require('mongoose');
 const path = require('path');
 const User = require('./models/User');
-const Test = require('./models/test-list');
+const Test = require('./models/test'); // Renamed from 'test-list' to 'test'
 const bodyParser = require('body-parser');
 const session = require('express-session');
 const MongoStore = require('connect-mongo');
@@ -53,7 +52,7 @@ app.post('/login', async (req, res) => {
     const user = await User.findOne({ email, password });
     if (user) {
       req.session.user = user;
-      res.redirect('/test-list');
+      res.redirect('/take-test.html'); // 🔁 changed from /test-list
     } else {
       res.send('<p>Invalid credentials. <a href="/">Try again</a></p>');
     }
@@ -61,14 +60,6 @@ app.post('/login', async (req, res) => {
     console.error(err);
     res.status(500).send("Server error");
   }
-});
-
-// Protected route: test list
-app.get('/test-list', (req, res) => {
-  if (!req.session.user) {
-    return res.redirect('/');
-  }
-  res.sendFile(path.join(__dirname, 'views', 'test-list.html'));
 });
 
 // ✅ API: Get all test numbers
@@ -83,14 +74,11 @@ app.get('/api/tests', async (req, res) => {
 });
 
 // ✅ API: Fetch specific test by testNumber
-app.get('/test-list/:testNumber', async (req, res) => {
+app.get('/api/tests/:testNumber', async (req, res) => {
   const testNumber = parseInt(req.params.testNumber);
-
   try {
     const test = await Test.findOne({ testNumber });
-    if (!test) {
-      return res.status(404).send('Test not found');
-    }
+    if (!test) return res.status(404).send('Test not found');
 
     res.json({
       testNumber: test.testNumber,
@@ -112,11 +100,9 @@ app.get('/test-list/:testNumber', async (req, res) => {
   }
 });
 
-// ✅ Serve take-test.html page for dynamic test loading
+// ✅ Serve take-test.html page
 app.get('/take-test.html', (req, res) => {
-  if (!req.session.user) {
-    return res.redirect('/');
-  }
+  if (!req.session.user) return res.redirect('/');
   res.sendFile(path.join(__dirname, 'public', 'take-test.html'));
 });
 
