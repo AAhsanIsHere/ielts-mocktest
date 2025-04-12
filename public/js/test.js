@@ -32,7 +32,7 @@ function updateTimer() {
 // Load test data from backend
 async function loadTestData() {
   try {
-    const response = await fetch(`/test/${testNumber}`);
+    const response = await fetch(`/test-list/${testNumber}`);
     testData = await response.json();
 
     if (!testData || !testData.passages || testData.passages.length === 0) {
