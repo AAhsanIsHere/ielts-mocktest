@@ -47,7 +47,7 @@ app.post('/login', async (req, res) => {
   const user = await User.findOne({ email, password });
   if (user) {
     req.session.user = user;
-    res.redirect('/test-list'); // ✅ You kept this route for listing available tests
+    res.redirect('/test-list'); // Redirect to test list page after login
   } else {
     res.send(`<p>Invalid credentials. <a href="/">Try again</a></p>`);
   }
@@ -60,7 +60,18 @@ app.get('/test-list', (req, res) => {
   res.sendFile(path.join(__dirname, 'views', 'test-list.html'));
 });
 
-// ✅ Route that fetches test data based on testNumber
+// ✅ NEW: Get list of available test numbers
+app.get('/api/tests', async (req, res) => {
+  try {
+    const tests = await Test.find({}, 'testNumber').sort({ testNumber: 1 });
+    res.json(tests);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Server error');
+  }
+});
+
+// ✅ Fetch test data by testNumber
 app.get('/test-list/:testNumber', async (req, res) => {
   const testNumber = req.params.testNumber;
 
