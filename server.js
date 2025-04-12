@@ -9,9 +9,13 @@ const MongoStore = require('connect-mongo');
 const app = express();
 
 // ✅ MongoDB connection
-mongoose.connect(process.env.MONGO_URI)
+mongoose.connect(process.env.MONGO_URI, {
+  useNewUrlParser: true,  // Ensures the new URL string parser is used
+  useUnifiedTopology: true  // Uses the new server discovery and monitoring engine
+})
   .then(() => console.log("✅ MongoDB connected"))
   .catch(err => console.error("❌ MongoDB error:", err));
+
 
 // ✅ Middleware setup
 app.use(express.static('public'));
