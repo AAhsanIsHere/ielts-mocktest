@@ -2,14 +2,14 @@ const express = require('express');
 const mongoose = require('mongoose');
 const path = require('path');
 const User = require('./models/User');
-const Test = require('./models/test'); // renamed from Test.js to test.js
+const Test = require('./models/test'); // ✅ this is your Mongoose model file
 const bodyParser = require('body-parser');
 const session = require('express-session');
 const MongoStore = require('connect-mongo');
 
 const app = express();
 
-// MongoDB Connection
+// MongoDB connection
 mongoose.connect(process.env.MONGO_URI)
   .then(() => console.log("MongoDB connected"))
   .catch(err => console.error(err));
@@ -18,9 +18,8 @@ mongoose.connect(process.env.MONGO_URI)
 app.use(express.static('public'));
 app.use(bodyParser.urlencoded({ extended: true }));
 
-// Sessions
 app.use(session({
-  secret: 'ieltsSecret', // Replace with a strong secret
+  secret: 'ieltsSecret',
   resave: false,
   saveUninitialized: false,
   store: MongoStore.create({
@@ -28,8 +27,8 @@ app.use(session({
     collectionName: 'sessions',
   }),
   cookie: {
-    maxAge: 1000 * 60 * 60 * 24, // 1 day
-    secure: false // set true only if using HTTPS
+    maxAge: 1000 * 60 * 60 * 24,
+    secure: false
   }
 }));
 
@@ -48,7 +47,7 @@ app.post('/login', async (req, res) => {
   const user = await User.findOne({ email, password });
   if (user) {
     req.session.user = user;
-    res.redirect('/test-list'); // changed from /tests-list to /test-list
+    res.redirect('/test-list'); // ✅ You kept this route for listing available tests
   } else {
     res.send(`<p>Invalid credentials. <a href="/">Try again</a></p>`);
   }
@@ -59,18 +58,17 @@ app.get('/user-info', (req, res) => {
     return res.status(401).json({ message: 'Not logged in' });
   }
 
-  res.json({
-    name: req.session.user.name
-  });
+  res.json({ name: req.session.user.name });
 });
 
 app.get('/test-list', (req, res) => {
   if (!req.session.user) {
     return res.redirect('/');
   }
-  res.sendFile(path.join(__dirname, 'views', 'test-list.html')); // adjusted to match renamed file
+  res.sendFile(path.join(__dirname, 'views', 'test-list.html'));
 });
 
+// ✅ Route that fetches test data based on testNumber
 app.get('/test/:testNumber', async (req, res) => {
   const testNumber = req.params.testNumber;
 
@@ -80,7 +78,20 @@ app.get('/test/:testNumber', async (req, res) => {
       return res.status(404).send('Test not found');
     }
 
-    res.json(test);
+    res.json({
+      testNumber: test.testNumber,
+      passages: [
+        {
+          title: `Passage for Test ${test.testNumber}`,
+          text: test.passage,
+          questions: test.questions.map((q, i) => ({
+            id: `q${i + 1}`,
+            text: q.questionText,
+            answer: q.answer.toUpperCase()
+          }))
+        }
+      ]
+    });
   } catch (err) {
     console.error(err);
     res.status(500).send('Server error');
