@@ -1,3 +1,4 @@
+// server.js
 const express = require('express');
 const mongoose = require('mongoose');
 const path = require('path');
@@ -9,14 +10,15 @@ const MongoStore = require('connect-mongo');
 
 const app = express();
 
-// MongoDB connection
+// ✅ MongoDB connection
 mongoose.connect(process.env.MONGO_URI)
-  .then(() => console.log("MongoDB connected"))
-  .catch(err => console.error(err));
+  .then(() => console.log("✅ MongoDB connected"))
+  .catch(err => console.error("❌ MongoDB error:", err));
 
-// Middleware
+// ✅ Middleware setup
 app.use(express.static('public'));
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
 
 app.use(session({
   secret: 'ieltsSecret',
@@ -28,31 +30,40 @@ app.use(session({
   }),
   cookie: {
     maxAge: 1000 * 60 * 60 * 24,
-    secure: false
-  }
+    secure: false,
+  },
 }));
 
-// Routes
+// ✅ Routes
+
+// Home/Login Page
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'views', 'index.html'));
 });
 
+// Login Page
 app.get('/login', (req, res) => {
   res.sendFile(path.join(__dirname, 'views', 'login.html'));
 });
 
+// Handle Login
 app.post('/login', async (req, res) => {
   const { email, password } = req.body;
-
-  const user = await User.findOne({ email, password });
-  if (user) {
-    req.session.user = user;
-    res.redirect('/test-list'); // Redirect to test list page after login
-  } else {
-    res.send(`<p>Invalid credentials. <a href="/">Try again</a></p>`);
+  try {
+    const user = await User.findOne({ email, password });
+    if (user) {
+      req.session.user = user;
+      res.redirect('/test-list');
+    } else {
+      res.send('<p>Invalid credentials. <a href="/">Try again</a></p>');
+    }
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Server error");
   }
 });
 
+// Protected route: test list
 app.get('/test-list', (req, res) => {
   if (!req.session.user) {
     return res.redirect('/');
@@ -60,7 +71,7 @@ app.get('/test-list', (req, res) => {
   res.sendFile(path.join(__dirname, 'views', 'test-list.html'));
 });
 
-// ✅ NEW: Get list of available test numbers
+// ✅ API: Get all test numbers
 app.get('/api/tests', async (req, res) => {
   try {
     const tests = await Test.find({}, 'testNumber').sort({ testNumber: 1 });
@@ -71,9 +82,9 @@ app.get('/api/tests', async (req, res) => {
   }
 });
 
-// ✅ Fetch test data by testNumber
+// ✅ API: Fetch specific test by testNumber
 app.get('/test-list/:testNumber', async (req, res) => {
-  const testNumber = req.params.testNumber;
+  const testNumber = parseInt(req.params.testNumber);
 
   try {
     const test = await Test.findOne({ testNumber });
@@ -101,7 +112,16 @@ app.get('/test-list/:testNumber', async (req, res) => {
   }
 });
 
-// Start server
-app.listen(3000, () => {
-  console.log('Server running on http://localhost:3000');
+// ✅ Serve take-test.html page for dynamic test loading
+app.get('/take-test.html', (req, res) => {
+  if (!req.session.user) {
+    return res.redirect('/');
+  }
+  res.sendFile(path.join(__dirname, 'public', 'take-test.html'));
+});
+
+// ✅ Start server
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`🚀 Server running at http://localhost:${PORT}`);
 });

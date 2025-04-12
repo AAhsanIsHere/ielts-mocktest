@@ -1,0 +1,19 @@
+<!-- public/take-test.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>IELTS Reading Test</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <div id="timer"></div>
+  <div id="passage-pane"></div>
+  <ul id="question-list"></ul>
+  <button id="prevBtn" onclick="changePassage(-1)">Previous</button>
+  <button id="nextBtn" onclick="changePassage(1)">Next</button>
+  <button id="submitBtn" onclick="submitAnswers()">Submit</button>
+  <div id="results"></div>
+  <script src="/test.js"></script>
+</body>
+</html>
