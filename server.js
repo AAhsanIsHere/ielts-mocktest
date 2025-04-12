@@ -2,7 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const path = require('path');
 const User = require('./models/User');
-const Test = require('./models/Test');
+const Test = require('./models/test'); // renamed from Test.js to test.js
 const bodyParser = require('body-parser');
 const session = require('express-session');
 const MongoStore = require('connect-mongo');
@@ -48,7 +48,7 @@ app.post('/login', async (req, res) => {
   const user = await User.findOne({ email, password });
   if (user) {
     req.session.user = user;
-    res.redirect('/tests');
+    res.redirect('/test-list'); // changed from /tests-list to /test-list
   } else {
     res.send(`<p>Invalid credentials. <a href="/">Try again</a></p>`);
   }
@@ -64,11 +64,11 @@ app.get('/user-info', (req, res) => {
   });
 });
 
-app.get('/tests', (req, res) => {
+app.get('/test-list', (req, res) => {
   if (!req.session.user) {
     return res.redirect('/');
   }
-  res.sendFile(path.join(__dirname, 'views', 'tests.html'));
+  res.sendFile(path.join(__dirname, 'views', 'test-list.html')); // adjusted to match renamed file
 });
 
 app.get('/test/:testNumber', async (req, res) => {
