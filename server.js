@@ -48,18 +48,38 @@ app.get('/login', (req, res) => {
 app.post('/login', async (req, res) => {
   const { email, password } = req.body;
   try {
-    const user = await User.findOne({ email, password });
-    if (user) {
+    const user = await User.findOne({ email });
+    if (user && await bcrypt.compare(password, user.password)) {
       req.session.user = user;
-      res.send('<p>Login successful. Test features are disabled for now.</p>');
+      res.redirect('/dashboard');
     } else {
-      res.send('<p>Invalid credentials. <a href="/">Try again</a></p>');
+      res.send('<p>Invalid credentials. <a href="/login">Try again</a></p>');
     }
   } catch (err) {
     console.error(err);
     res.status(500).send("Server error");
   }
 });
+
+
+// Dashboard page - list mock tests
+app.get('/dashboard', (req, res) => {
+  if (!req.session.user) {
+    return res.redirect('/login');
+  }
+  res.sendFile(path.join(__dirname, 'views', 'dashboard.html'));
+});
+
+
+app.get('/mocktest/:id', (req, res) => {
+  if (!req.session.user) {
+    return res.redirect('/login');
+  }
+
+  const testId = req.params.id;
+  res.send(`<h1>Mock Test ${testId}</h1><p>This is a placeholder page.</p><a href="/dashboard">Back to Dashboard</a>`);
+});
+
 
 // ✅ Start server
 const PORT = process.env.PORT || 3000;
