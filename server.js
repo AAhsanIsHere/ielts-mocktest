@@ -53,14 +53,6 @@ app.post('/login', async (req, res) => {
   }
 });
 
-app.get('/user-info', (req, res) => {
-  if (!req.session.user) {
-    return res.status(401).json({ message: 'Not logged in' });
-  }
-
-  res.json({ name: req.session.user.name });
-});
-
 app.get('/test-list', (req, res) => {
   if (!req.session.user) {
     return res.redirect('/');
@@ -69,7 +61,7 @@ app.get('/test-list', (req, res) => {
 });
 
 // ✅ Route that fetches test data based on testNumber
-app.get('/test/:testNumber', async (req, res) => {
+app.get('/test-list/:testNumber', async (req, res) => {
   const testNumber = req.params.testNumber;
 
   try {
