@@ -1,5 +1,6 @@
-// Hardcoded test number
-const testNumber = 1;
+const urlParams = new URLSearchParams(window.location.search);
+const testNumber = parseInt(urlParams.get("test")) || 1;
+
 
 let currentPassage = 0;
 let userAnswers = {};
