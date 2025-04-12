@@ -16,7 +16,7 @@
       "mongoose": "^5.10.9",
       "dotenv": "^8.2.0",
       "cors": "^2.8.5",
-      "session": "^1.17.2"
+      "express-session": "^1.17.2"
     },
     "devDependencies": {
       "nodemon": "^2.0.4"
