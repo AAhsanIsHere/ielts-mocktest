@@ -2,7 +2,6 @@ const express = require('express');
 const mongoose = require('mongoose');
 const path = require('path');
 const User = require('./models/User');
-const Test = require('./models/test'); // Renamed from 'test-list' to 'test'
 const bodyParser = require('body-parser');
 const session = require('express-session');
 const MongoStore = require('connect-mongo');
@@ -52,7 +51,7 @@ app.post('/login', async (req, res) => {
     const user = await User.findOne({ email, password });
     if (user) {
       req.session.user = user;
-      res.redirect('/take-test.html'); // 🔁 changed from /test-list
+      res.send('<p>Login successful. Test features are disabled for now.</p>');
     } else {
       res.send('<p>Invalid credentials. <a href="/">Try again</a></p>');
     }
@@ -60,50 +59,6 @@ app.post('/login', async (req, res) => {
     console.error(err);
     res.status(500).send("Server error");
   }
-});
-
-// ✅ API: Get all test numbers
-app.get('/api/tests', async (req, res) => {
-  try {
-    const tests = await Test.find({}, 'testNumber').sort({ testNumber: 1 });
-    res.json(tests);
-  } catch (err) {
-    console.error(err);
-    res.status(500).send('Server error');
-  }
-});
-
-// ✅ API: Fetch specific test by testNumber
-app.get('/api/tests/:testNumber', async (req, res) => {
-  const testNumber = parseInt(req.params.testNumber);
-  try {
-    const test = await Test.findOne({ testNumber });
-    if (!test) return res.status(404).send('Test not found');
-
-    res.json({
-      testNumber: test.testNumber,
-      passages: [
-        {
-          title: `Passage for Test ${test.testNumber}`,
-          text: test.passage,
-          questions: test.questions.map((q, i) => ({
-            id: `q${i + 1}`,
-            text: q.questionText,
-            answer: q.answer.toUpperCase()
-          }))
-        }
-      ]
-    });
-  } catch (err) {
-    console.error(err);
-    res.status(500).send('Server error');
-  }
-});
-
-// ✅ Serve take-test.html page
-app.get('/take-test.html', (req, res) => {
-  if (!req.session.user) return res.redirect('/');
-  res.sendFile(path.join(__dirname, 'public', 'take-test.html'));
 });
 
 // ✅ Start server
